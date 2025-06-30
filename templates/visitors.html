@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Visitors</title>
+</head>
+<body>
+  <h1>All Visitor Registrations</h1>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Full Name</th>
+        <th>Contact</th>
+        <th>Email</th>
+        <th>Company</th>
+        <th>Purpose</th>
+        <th>Host</th>
+        <th>Visit Date</th>
+        <th>Visit Time</th>
+        <th>ID Type</th>
+        <th>ID Number</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in visitors %}
+      <tr>
+        <td>{{ v.id }}</td>
+        <td>{{ v.full_name }}</td>
+        <td>{{ v.contact_number }}</td>
+        <td>{{ v.email }}</td>
+        <td>{{ v.company }}</td>
+        <td>{{ v.purpose }}</td>
+        <td>{{ v.host }}</td>
+        <td>{{ v.visit_date }}</td>
+        <td>{{ v.visit_time }}</td>
+        <td>{{ v.id_type }}</td>
+        <td>{{ v.id_number }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
