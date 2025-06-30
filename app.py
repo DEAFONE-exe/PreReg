@@ -30,6 +30,11 @@ with app.app_context():
 
 @app.route('/')
 def index():
+    return render_template('login.html')
+
+
+@app.route('/reg')
+def prereg():
     return render_template('pre_registration.html')
 
 @app.route('/submit', methods=['POST'])
@@ -70,7 +75,12 @@ def submit():
     db.session.commit()
 
     flash('Pre-registration successful! Your visit details have been saved.')
-    return redirect(url_for('index'))
+    return redirect(url_for('hello_world'))
+
+@app.route('/hello')
+def hello_world():
+    return "<h1>Hello World</h1>"
+
 
 # Optional: show all visitors (for testing)
 @app.route('/visitors')
