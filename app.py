@@ -1,7 +1,6 @@
 # app.py (Flask backend)
 
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'  # Required for flash messages
