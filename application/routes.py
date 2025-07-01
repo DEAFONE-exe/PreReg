@@ -1,38 +1,48 @@
 from application import app, db
-from application.models import LogEntry, Visitor
+from application.models import User, Visitor
 from datetime import datetime
-from application.forms import LoginForm
+from application.forms import LoginForm, RegistrationForm
 from flask import render_template, request, flash, json, jsonify, redirect, url_for
+from flask_login import login_user, logout_user, login_required, current_user
+from . import admin
 
 @app.route('/')
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('prereg'))
     loginform = LoginForm()
     return render_template('login.html', form=loginform, title="Authentication")
 
 @app.route('/auth', methods=['GET','POST'])
 def auth():
+    if current_user.is_authenticated:
+        return redirect(url_for('prereg'))
     loginform = LoginForm()
-    if request.method =='POST':
-        if loginform.validate_on_submit():
-            IdentificationKey = loginform.IdentificationKey.data
-            Password = loginform.Password.data
-            new_entry = LogEntry(
-                IdentificationKey = IdentificationKey,
-                Password = Password,
-                authenticated_on = datetime.utcnow()
-            )
-            add_entry(new_entry)
-            flash("Authentication Successful", "success")
+    if loginform.validate_on_submit():
+        user = User.query.filter_by(IdentificationKey=loginform.IdentificationKey.data).first()
+        if user and user.check_password(loginform.password.data):
+            login_user(user)
+            flash('Login successful.', 'success')
+            return redirect(url_for('prereg'))
         else:
-            flash("Error, cannot proceed","danger")
-    return redirect(url_for('prereg'))
+            flash('Invalid Identification Key or password.', 'danger')
+    return render_template('login.html', form=loginform, title="Authentication")
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('index'))
 
 
 @app.route('/reg')
+@login_required
 def prereg():
     return render_template('pre_registration.html')
 
 @app.route('/submit', methods=['POST'])
+@login_required
 def submit():
     # Get form data
     full_name = request.form.get('full_name')
@@ -70,25 +80,11 @@ def submit():
     db.session.commit()
 
     flash('Pre-registration successful! Your visit details have been saved.')
-    return redirect(url_for('hello_world'))
-
-@app.route('/hello')
-def hello_world():
-    return "<h1>Hello World</h1>"
-
+    return redirect(url_for('prereg'))
 
 # Optional: show all visitors (for testing)
 @app.route('/visitors')
+@login_required
 def visitors():
     all_visitors = Visitor.query.all()
     return render_template('visitors.html', visitors=all_visitors)
-
-
-def add_entry(new_entry):
-    try:
-        db.session.add(new_entry)
-        db.session.commit()
-        return new_entry.id
-    except Exception as error:
-        db.session.rollback()
-        flash(error,"danger")

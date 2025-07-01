@@ -45,9 +45,9 @@ crossorigin="anonymous">
 {% endfor %}
 </p>
 <p>
-{{ form.Password.label }}<br>
-{{ form.Password(class_='form-control') }}
-{% for error in form.Password.errors %}
+{{ form.password.label }}<br>
+{{ form.password(class_='form-control') }}
+{% for error in form.password.errors %}
 <span class="error-message">{{ error }}</span>
 {% endfor %}
 </p>
