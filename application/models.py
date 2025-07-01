@@ -30,3 +30,4 @@ class Visitor(db.Model):
     visit_time = db.Column(db.String(10))
     id_type = db.Column(db.String(50))
     id_number = db.Column(db.String(100))
+    document_filename = db.Column(db.String(200))

@@ -5,6 +5,8 @@ from application.forms import LoginForm, RegistrationForm
 from flask import render_template, request, flash, json, jsonify, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user
 from . import admin
+import os
+from werkzeug.utils import secure_filename
 
 @app.route('/')
 def index():
@@ -41,6 +43,12 @@ def logout():
 def prereg():
     return render_template('pre_registration.html')
 
+# Define upload folder (do this near app config)
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'application', 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 @app.route('/submit', methods=['POST'])
 @login_required
 def submit():
@@ -55,11 +63,17 @@ def submit():
     visit_time = request.form.get('visit_time')
     id_type = request.form.get('id_type')
     id_number = request.form.get('id_number')
+    uploaded_file = request.files.get('document')
 
     # Simple validation
     if not full_name or not contact_number or not email or not visit_date:
         flash('Please fill in all required fields (Name, Contact, Email, Visit Date)')
         return redirect(url_for('prereg'))
+
+    filename = None
+    if uploaded_file and uploaded_file.filename != '':
+        filename = secure_filename(uploaded_file.filename)
+        uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
     # Create Visitor object
     visitor = Visitor(
@@ -72,7 +86,8 @@ def submit():
         visit_date=visit_date,
         visit_time=visit_time,
         id_type=id_type,
-        id_number=id_number
+        id_number=id_number,
+        document_filename=filename
     )
 
     # Save to DB

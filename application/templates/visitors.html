@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>All Visitors</title>
+  <style>
+    img.document-preview {
+      max-width: 100px;
+      max-height: 100px;
+    }
+  </style>
 </head>
+
 <body>
   <h1>All Visitor Registrations</h1>
   <table border="1" cellpadding="5" cellspacing="0">
@@ -20,6 +28,7 @@
         <th>Visit Time</th>
         <th>ID Type</th>
         <th>ID Number</th>
+        <th>Document</th> <!-- New column -->
       </tr>
     </thead>
     <tbody>
@@ -36,9 +45,19 @@
         <td>{{ v.visit_time }}</td>
         <td>{{ v.id_type }}</td>
         <td>{{ v.id_number }}</td>
+        <td>
+          {% if v.document_filename %}
+          <a href="{{ url_for('static', filename='uploads/' + v.document_filename) }}" target="_blank">
+            <button type="button">View Document</button>
+          </a>
+          {% else %}
+          No document
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </body>
+
 </html>
